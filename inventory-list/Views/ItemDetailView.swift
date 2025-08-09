@@ -1,3 +1,11 @@
+//
+//  ItemDetailView.swift
+//  inventory-list
+//
+//  Created by Omri Shapira on 02/08/2025.
+//
+
+
 import SwiftUI
 import SwiftData
 
