@@ -18,101 +18,60 @@ class InventoryDataManager: ObservableObject {
     }
     
     private func loadData() {
-        // Sample data - replace this with your actual JSON data
-        let sampleData = """
-        [
-          {
-            "cabinet": null,
-            "shelf": null,
-            "box": 1,
-            "barcode": 11,
-            "details": "NUC 13ANK/7000",
-            "quantity": 1,
-            "image": null,
-            "keyword": null
-          },
-          {
-            "cabinet": null,
-            "shelf": null,
-            "box": 1,
-            "barcode": 11,
-            "details": "מטען ל NUC",
-            "quantity": 1,
-            "image": null,
-            "keyword": null
-          },
-          {
-            "cabinet": null,
-            "shelf": null,
-            "box": 1,
-            "barcode": 11,
-            "details": "MY BOOK 8 GIGA",
-            "quantity": 1,
-            "image": null,
-            "keyword": null
-          },
-          {
-            "cabinet": null,
-            "shelf": null,
-            "box": 1,
-            "barcode": 11,
-            "details": "מטען ל MY BOOK",
-            "quantity": 1,
-            "image": null,
-            "keyword": null
-          },
-          {
-            "cabinet": null,
-            "shelf": null,
-            "box": 1,
-            "barcode": 11,
-            "details": "עכבר חוטי ו BT של HP",
-            "quantity": 1,
-            "image": null,
-            "keyword": null
-          },
-          {
-            "cabinet": 2,
-            "shelf": 3,
-            "box": 5,
-            "barcode": 25,
-            "details": "Dell Monitor 24 inch",
-            "quantity": 2,
-            "image": null,
-            "keyword": "monitor"
-          },
-          {
-            "cabinet": 1,
-            "shelf": 2,
-            "box": 3,
-            "barcode": 15,
-            "details": "Keyboard Logitech",
-            "quantity": 5,
-            "image": null,
-            "keyword": "keyboard"
-          }
-        ]
-        """
-        
-        guard let data = sampleData.data(using: .utf8) else {
-            DispatchQueue.main.async {
-                self.errorMessage = "Failed to load data"
-                self.isLoading = false
-            }
-            return
-        }
-        
-        do {
-            let decodedItems = try JSONDecoder().decode([InventoryItem].self, from: data)
-            DispatchQueue.main.async {
-                self.items = decodedItems
-                self.isLoading = false
-            }
-        } catch {
-            DispatchQueue.main.async {
-                self.errorMessage = "Failed to decode data: \(error.localizedDescription)"
-                self.isLoading = false
-            }
-        }
+        loadDataFromFile()
     }
+    
+    private func loadDataFromFile() {
+            // Try to load from bundle first, then from documents directory
+            guard let data = loadJSONFromBundle() ?? loadJSONFromDocuments() else {
+                DispatchQueue.main.async {
+                    self.errorMessage = "Could not find inventory.json file. Please add it to your project bundle or documents folder."
+                    self.isLoading = false
+                }
+                return
+            }
+            
+            do {
+                let decodedItems = try JSONDecoder().decode([InventoryItem].self, from: data)
+                DispatchQueue.main.async {
+                    self.items = decodedItems
+                    self.isLoading = false
+                    print("Successfully loaded \(decodedItems.count) items from JSON file")
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.errorMessage = "Failed to decode JSON data: \(error.localizedDescription)"
+                    self.isLoading = false
+                }
+            }
+        }
+        
+        private func loadJSONFromBundle() -> Data? {
+            guard let path = Bundle.main.path(forResource: "inventory", ofType: "json"),
+                  let data = try? Data(contentsOf: URL(fileURLWithPath: path)) else {
+                print("Could not load inventory.json from app bundle")
+                return nil
+            }
+            print("Successfully loaded inventory.json from app bundle")
+            return data
+        }
+        
+        private func loadJSONFromDocuments() -> Data? {
+            let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            let filePath = documentsPath.appendingPathComponent("inventory.json")
+            
+            guard let data = try? Data(contentsOf: filePath) else {
+                print("Could not load inventory.json from documents directory at: \(filePath)")
+                return nil
+            }
+            print("Successfully loaded inventory.json from documents directory")
+            return data
+        }
+        
+        // Method to reload data manually
+        func reloadData() {
+            isLoading = true
+            errorMessage = nil
+            loadData()
+        }
 }
