@@ -31,9 +31,11 @@ struct InventoryRowView: View {
                 
                 Spacer()
                 
-                if let keyword = item.keyword {
-                    Badge(text: keyword, color: .green)
-                        .font(.caption2)
+                if item.keyword != "" && item.keyword?.isEmpty == false {
+                    if let keyword = item.keyword {
+                        Badge(text: keyword, color: .green)
+                            .font(.caption2)
+                    }
                 }
             }
         }

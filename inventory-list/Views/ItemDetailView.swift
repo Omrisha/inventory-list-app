@@ -22,8 +22,10 @@ struct ItemDetailView: View {
                         .fontWeight(.bold)
                         .multilineTextAlignment(.leading)
                     
-                    if let keyword = item.keyword {
-                        Badge(text: keyword, color: .green)
+                    if item.keyword != "" && item.keyword?.isEmpty == false {
+                        if let keyword = item.keyword {
+                            Badge(text: keyword, color: .green)
+                        }
                     }
                 }
                 

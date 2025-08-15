@@ -10,8 +10,8 @@ import Foundation
 // MARK: - Data Model
 struct InventoryItem: Codable, Identifiable {
     let id = UUID()
-    let cabinet: Int?
-    let shelf: Int?
+    let cabinet: String?
+    let shelf: String?
     let box: Int?
     let barcode: String?
     let bag: String?
@@ -31,8 +31,8 @@ struct InventoryItem: Codable, Identifiable {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             
             // Decode standard optional fields
-            cabinet = try container.decodeIfPresent(Int.self, forKey: .cabinet)
-            shelf = try container.decodeIfPresent(Int.self, forKey: .shelf)
+            cabinet = try container.decodeIfPresent(String.self, forKey: .cabinet)
+            shelf = try container.decodeIfPresent(String.self, forKey: .shelf)
             box = try container.decodeIfPresent(Int.self, forKey: .box)
             bag = try container.decodeIfPresent(String.self, forKey: .bag)
             details = try container.decodeIfPresent(String.self, forKey: .details)
