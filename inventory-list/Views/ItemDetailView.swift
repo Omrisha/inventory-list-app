@@ -1,16 +1,9 @@
-//
-//  ItemDetailView.swift
-//  inventory-list
-//
-//  Created by Omri Shapira on 02/08/2025.
-//
-
-
 import SwiftUI
 import SwiftData
 
 struct ItemDetailView: View {
     let item: InventoryItem
+    @State private var showingEditSheet = false
     
     var body: some View {
         ScrollView {
@@ -52,11 +45,31 @@ struct ItemDetailView: View {
                     }
                 }
                 
+                // Comments section if available
+                if let comment = item.comment, !comment.isEmpty {
+                    InfoSection(title: "Comments") {
+                        Text(comment)
+                            .padding()
+                            .background(Color(.systemGray6))
+                            .cornerRadius(8)
+                    }
+                }
+                
                 Spacer()
             }
             .padding()
         }
         .navigationTitle("Item Details")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button("Edit") {
+                    showingEditSheet = true
+                }
+            }
+        }
+        .sheet(isPresented: $showingEditSheet) {
+            EditItemView(item: item)
+        }
     }
 }

@@ -10,20 +10,34 @@ import Foundation
 // MARK: - Data Model
 struct InventoryItem: Codable, Identifiable {
     let id = UUID()
-    let cabinet: String?
-    let shelf: String?
-    let box: Int?
-    let barcode: String?
-    let bag: String?
-    let details: String?
-    let quantity: Int?
-    let comment: String?
-    let image: String?
-    let keyword: String?
+    var cabinet: String?
+    var shelf: String?
+    var box: Int?
+    var barcode: String?
+    var bag: String?
+    var details: String?
+    var quantity: Int?
+    var comment: String?
+    var image: String?
+    var keyword: String?
     
     // Custom CodingKeys
         enum CodingKeys: String, CodingKey {
             case cabinet, shelf, box, barcode, bag, details, quantity, comment, image, keyword
+        }
+        
+        // Default initializer for creating new items
+        init(cabinet: String? = nil, shelf: String? = nil, box: Int? = nil, barcode: String? = nil, bag: String? = nil, details: String? = nil, quantity: Int? = nil, comment: String? = nil, image: String? = nil, keyword: String? = nil) {
+            self.cabinet = cabinet
+            self.shelf = shelf
+            self.box = box
+            self.barcode = barcode
+            self.bag = bag
+            self.details = details
+            self.quantity = quantity
+            self.comment = comment
+            self.image = image
+            self.keyword = keyword
         }
         
         // Custom decoder to handle mixed barcode types

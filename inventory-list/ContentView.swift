@@ -10,20 +10,21 @@ import SwiftData
 
 struct ContentView: View {
     @StateObject private var dataManager = InventoryDataManager()
-        @State private var searchText = ""
+    @State private var searchText = ""
+    @State private var showingAddSheet = false
         
-        var filteredItems: [InventoryItem] {
-            if searchText.isEmpty {
-                return dataManager.items
-            } else {
-                return dataManager.items.filter { item in
-                    item.displayDetails.localizedCaseInsensitiveContains(searchText) ||
-                    item.displayBox.localizedCaseInsensitiveContains(searchText) ||
-                    item.displayBarcode.localizedCaseInsensitiveContains(searchText) ||
-                    (item.keyword?.localizedCaseInsensitiveContains(searchText) ?? false)
-                }
+    var filteredItems: [InventoryItem] {
+        if searchText.isEmpty {
+            return dataManager.items
+        } else {
+            return dataManager.items.filter { item in
+                item.displayDetails.localizedCaseInsensitiveContains(searchText) ||
+                item.displayBox.localizedCaseInsensitiveContains(searchText) ||
+                item.displayBarcode.localizedCaseInsensitiveContains(searchText) ||
+                (item.keyword?.localizedCaseInsensitiveContains(searchText) ?? false)
             }
         }
+    }
 
     var body: some View {
         NavigationView {
@@ -42,9 +43,7 @@ struct ContentView: View {
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                         Button("Retry") {
-                            dataManager.isLoading = true
-                            dataManager.errorMessage = nil
-                            // Reload data here
+                            dataManager.reloadData()
                         }
                         .buttonStyle(.bordered)
                     }
@@ -55,6 +54,19 @@ struct ContentView: View {
             }
             .navigationTitle("Box Inventory")
             .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        showingAddSheet = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                    .disabled(dataManager.isLoading)
+                }
+            }
+            .sheet(isPresented: $showingAddSheet) {
+                EditItemView()
+            }
         }
         .environmentObject(dataManager)
     }

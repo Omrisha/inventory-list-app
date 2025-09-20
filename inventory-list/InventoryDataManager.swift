@@ -74,4 +74,48 @@ class InventoryDataManager: ObservableObject {
             errorMessage = nil
             loadData()
         }
+        
+        // MARK: - CRUD Operations
+        
+        // Add a new item
+        func addItem(_ item: InventoryItem) {
+            items.append(item)
+            saveDataToDocuments()
+        }
+        
+        // Update an existing item
+        func updateItem(_ updatedItem: InventoryItem) {
+            if let index = items.firstIndex(where: { $0.id == updatedItem.id }) {
+                items[index] = updatedItem
+                saveDataToDocuments()
+            }
+        }
+        
+        // Delete an item
+        func deleteItem(_ item: InventoryItem) {
+            items.removeAll { $0.id == item.id }
+            saveDataToDocuments()
+        }
+        
+        // Delete items at specific indices (for swipe-to-delete)
+        func deleteItems(at indexSet: IndexSet) {
+            items.remove(atOffsets: indexSet)
+            saveDataToDocuments()
+        }
+        
+        // Save data to documents directory
+        private func saveDataToDocuments() {
+            let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            let filePath = documentsPath.appendingPathComponent("inventory.json")
+            
+            do {
+                let jsonData = try JSONEncoder().encode(items)
+                try jsonData.write(to: filePath)
+                print("Successfully saved data to documents directory")
+            } catch {
+                DispatchQueue.main.async {
+                    self.errorMessage = "Failed to save data: \(error.localizedDescription)"
+                }
+            }
+        }
 }
