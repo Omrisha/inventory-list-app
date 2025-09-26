@@ -23,7 +23,7 @@ class InventoryDataManager: ObservableObject {
     
     private func loadDataFromFile() {
             // Try to load from bundle first, then from documents directory
-            guard let data = loadJSONFromBundle() ?? loadJSONFromDocuments() else {
+            guard let data = loadJSONFromDocuments() ?? loadJSONFromBundle() else {
                 DispatchQueue.main.async {
                     self.errorMessage = "Could not find inventory.json file. Please add it to your project bundle or documents folder."
                     self.isLoading = false
@@ -119,3 +119,4 @@ class InventoryDataManager: ObservableObject {
             }
         }
 }
+

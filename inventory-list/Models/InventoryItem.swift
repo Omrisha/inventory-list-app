@@ -20,14 +20,15 @@ struct InventoryItem: Codable, Identifiable {
     var comment: String?
     var image: String?
     var keyword: String?
+    var model: String?
     
     // Custom CodingKeys
         enum CodingKeys: String, CodingKey {
-            case cabinet, shelf, box, barcode, bag, details, quantity, comment, image, keyword
+            case cabinet, shelf, box, barcode, bag, details, quantity, comment, image, keyword, model
         }
         
         // Default initializer for creating new items
-        init(cabinet: String? = nil, shelf: String? = nil, box: Int? = nil, barcode: String? = nil, bag: String? = nil, details: String? = nil, quantity: Int? = nil, comment: String? = nil, image: String? = nil, keyword: String? = nil) {
+        init(cabinet: String? = nil, shelf: String? = nil, box: Int? = nil, barcode: String? = nil, bag: String? = nil, details: String? = nil, quantity: Int? = nil, comment: String? = nil, image: String? = nil, keyword: String? = nil, model: String? = nil) {
             self.cabinet = cabinet
             self.shelf = shelf
             self.box = box
@@ -38,6 +39,7 @@ struct InventoryItem: Codable, Identifiable {
             self.comment = comment
             self.image = image
             self.keyword = keyword
+            self.model = model
         }
         
         // Custom decoder to handle mixed barcode types
@@ -54,6 +56,7 @@ struct InventoryItem: Codable, Identifiable {
             comment = try container.decodeIfPresent(String.self, forKey: .comment)
             image = try container.decodeIfPresent(String.self, forKey: .image)
             keyword = try container.decodeIfPresent(String.self, forKey: .keyword)
+            model = try container.decodeIfPresent(String.self, forKey: .model)
             
             // Handle mixed barcode types (Int or String)
             if let barcodeInt = try? container.decode(Int.self, forKey: .barcode) {
@@ -79,6 +82,7 @@ struct InventoryItem: Codable, Identifiable {
             try container.encodeIfPresent(comment, forKey: .comment)
             try container.encodeIfPresent(image, forKey: .image)
             try container.encodeIfPresent(keyword, forKey: .keyword)
+            try container.encodeIfPresent(model, forKey: .model)
         }
     
     // Computed properties for display

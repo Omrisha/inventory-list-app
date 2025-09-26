@@ -12,6 +12,7 @@ struct ContentView: View {
     @StateObject private var dataManager = InventoryDataManager()
     @State private var searchText = ""
     @State private var showingAddSheet = false
+    @State private var showingImportExportSheet = false
         
     var filteredItems: [InventoryItem] {
         if searchText.isEmpty {
@@ -21,7 +22,8 @@ struct ContentView: View {
                 item.displayDetails.localizedCaseInsensitiveContains(searchText) ||
                 item.displayBox.localizedCaseInsensitiveContains(searchText) ||
                 item.displayBarcode.localizedCaseInsensitiveContains(searchText) ||
-                (item.keyword?.localizedCaseInsensitiveContains(searchText) ?? false)
+                (item.keyword?.localizedCaseInsensitiveContains(searchText) ?? false) ||
+                (item.model?.localizedCaseInsensitiveContains(searchText) ?? false)
             }
         }
     }
@@ -55,6 +57,15 @@ struct ContentView: View {
             .navigationTitle("Box Inventory")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        showingImportExportSheet = true
+                    } label: {
+                        Image(systemName: "arrow.up.arrow.down")
+                    }
+                    .disabled(dataManager.isLoading)
+                }
+                
                 ToolbarItem(placement: .primaryAction) {
                     Button {
                         showingAddSheet = true
@@ -66,6 +77,9 @@ struct ContentView: View {
             }
             .sheet(isPresented: $showingAddSheet) {
                 EditItemView()
+            }
+            .sheet(isPresented: $showingImportExportSheet) {
+                ImportExportView()
             }
         }
         .environmentObject(dataManager)
